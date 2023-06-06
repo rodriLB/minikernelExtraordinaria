@@ -44,6 +44,25 @@ int escribir(char *texto, unsigned int longi){
 	return llamsis(ESCRIBIR, 2, (long)texto, (long)longi);
 }
 
+
+//Ejericio Dormir
 int dormir(unsigned int segundos) {
 	return llamsis(DORMIR, 1, (long)segundos);
+}
+
+//Ejercicio Mutex
+int crear_mutex(char* nombre, unsigned int tipo) {
+	return llamsis(CREARMUTEX, 2, (long)nombre, (long)tipo);
+}
+int abrir_mutex(char* nombre) {
+	return llamsis(ABRIRMUTEX, 1, (long)nombre);
+}
+int lock(unsigned int mutexid) {
+	return llamsis(LOCK, 1, (long)mutexid);
+}
+int unlock(unsigned int mutexid) {
+	return llamsis(UNLOCK, 1, (long)mutexid);
+}
+int cerrar_mutex(unsigned int mutexid) {
+	return llamsis(CERRARMUTEX, 1, (long)mutexid);
 }

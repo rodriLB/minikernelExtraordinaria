@@ -33,6 +33,12 @@ int escribir(char *texto, unsigned int longi);
 //Ejercicio Dormir
 int dormir(unsigned int segundos);
 
+//Ejercicio Mutex
+int crear_mutex(char* nombre, unsigned int tipo);
+int abrir_mutex(char* nombre);
+int lock(unsigned int mutexid);
+int unlock(unsigned int mutexid);
+int cerrar_mutex(unsigned int mutexid);
 
 #endif /* SERVICIOS_H */
 
