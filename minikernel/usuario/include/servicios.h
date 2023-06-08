@@ -30,8 +30,16 @@ int crear_proceso(char *prog);
 int terminar_proceso();
 int escribir(char *texto, unsigned int longi);
 
+//Obtener ID
+int obtener_id_pr();
+
 //Ejercicio Dormir
 int dormir(unsigned int segundos);
+
+
+//Defines de Mutex
+#define NO_RECURSIVO 0 
+#define RECURSIVO 1 
 
 //Ejercicio Mutex
 int crear_mutex(char* nombre, unsigned int tipo);

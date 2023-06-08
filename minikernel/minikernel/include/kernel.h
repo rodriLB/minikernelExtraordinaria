@@ -97,6 +97,9 @@ servicio tabla_servicios[NSERVICIOS]={	{sis_crear_proceso},
 					{sis_terminar_proceso},
 					{sis_escribir}};
 
+
+int obtener_id_pr();
+
 //Ejercicio Dormir
 int dormir(unsigned int segundos);
 
@@ -136,7 +139,7 @@ lista_BCPs listaProcesosBloqueadosMutex = { NULL, NULL }; //Lista de procesos bl
 int contListaMutexBloqueadosSist; //Contador de la lista de mutex del sistema de procesos bloqueados
 
 //Funciones para mutex
-int comprobacionesMutex(char *nombre, int decrementarProceso);
+int comprobacionesMutex(char *nombre);
 int comprobacionMutexNombre(char* nombre);
 int comprobacionMutexLonNombre(char* nombre);
 int comprobarMutexEspacioLibre();

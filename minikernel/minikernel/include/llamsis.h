@@ -25,15 +25,17 @@
 #define TERMINAR_PROCESO 1
 #define ESCRIBIR 2
 
+#define OBTENERID 3
+
 //Ejercicio Dormir
-#define DORMIR 3
+#define DORMIR 4
 
 //Ejercicio Mutex
-#define CREARMUTEX 4
-#define ABRIRMUTEX 5
-#define LOCK 6
-#define UNLOCK 7
-#define CERRARMUTEX 8
+#define CREARMUTEX 5
+#define ABRIRMUTEX 6
+#define LOCK 7
+#define UNLOCK 8
+#define CERRARMUTEX 9
 
 
 #endif /* _LLAMSIS_H */

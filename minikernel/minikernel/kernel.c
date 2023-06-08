@@ -319,6 +319,11 @@ int sis_terminar_proceso(){
 }
 
 
+//Obtener ID
+int obtener_id_pr(){
+	return p_proc_actual->id;
+}
+
 //Ejercio Dormir
 int dormir(unsigned int segundos){
 
@@ -339,7 +344,7 @@ int dormir(unsigned int segundos){
 
 
 //Ejercicio Mutex
-int comprobacionesMutex(char *nombre, int decrementarProceso){
+int comprobacionesMutex(char *nombre){
 	//COMPROBACCIONES
 	//Longitud del nombre
 	if (comprobacionMutexLonNombre(nombre) != 0)
@@ -352,7 +357,7 @@ int comprobacionesMutex(char *nombre, int decrementarProceso){
 	}
 
 	//Descriptores Libres
-	decrementarProceso = comprobacionDescriptorLibre();
+	int decrementarProceso = comprobacionDescriptorLibre();
 	if (decrementarProceso == -1) {
 		printk("Error, el proceso id: %d no tiene descriptores libres\n", p_proc_actual->id);
 		return -1;
@@ -427,7 +432,7 @@ int crear_mutex(char *nombre, int tipo){
 	int nivelAnterior, decrementarMutex, decrementarProceso, mutexCreado;
 	
 	//Comprobaciones
-	decrementarProceso = comprobarMutex(nombre, decrementarProceso);
+	decrementarProceso = comprobacionesMutex(nombre);
 
 	//Espacio libre mutex
 	mutexCreado = 0;

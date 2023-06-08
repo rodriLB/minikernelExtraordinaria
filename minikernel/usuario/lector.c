@@ -1,9 +1,9 @@
 /*
  * usuario/lector.c
  *
- *  Minikernel. Versión 1.0
+ *  Minikernel. Versiï¿½n 1.0
  *
- *  Fernando Pérez Costoya
+ *  Fernando Pï¿½rez Costoya
  *
  */
 
@@ -12,6 +12,7 @@
  */
 
 #include "servicios.h"
+#include <stdio.h>
 
 int main(){
 	int car, id, i;
@@ -20,7 +21,7 @@ int main(){
 	printf("lector (%d): comienza\n", id);
 
 	printf("lector (%d): pulsa caracteres a partir de ahora\n", id);
-	car=leer_caracter();
+	car=getchar();
 	printf("lector (%d): has pulsado %c\n", id, car);
 
 	/* ahora duerme 3 segundos.*/
@@ -28,7 +29,7 @@ int main(){
 	dormir(3);
 
 	for (i=1; i<=10; i++) {
-		car=leer_caracter();
+		car=getchar();
 		printf("lector (%d): has pulsado %c\n", id, car);
 	}
 
