@@ -1,1 +1,1 @@
-Vamos a aprobar esta puta asignatura
+Vamos a aprobar esta asignatura
