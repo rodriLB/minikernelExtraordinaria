@@ -646,6 +646,8 @@ int cerrar_mutex(unsigned int mutexid){
 	return 0;
 }
 
+//Fin de Mutex
+
 
 
 /*
