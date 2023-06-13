@@ -197,9 +197,29 @@ static void int_terminal(){
  */
 static void int_reloj(){
 
+	ticksRound_robin();
+	
+	
 	printk("-> TRATANDO INT. DE RELOJ\n");
+	
 
-        return;
+	//Llamamos a los procesos dormidos
+	BCPptr procesoActualmente = lista_dormidos.primero;
+	//Recorrer por medio de un bucle
+	while (procesoActualmente != NULL) {
+		BCPptr procesoSiguiente = procesoActualmente->siguiente;
+		procesoActualmente->seg_bloqueado--;
+		if (procesoActualmente->seg_bloqueado <= 0) { //Tiempo agotado
+			int nivelAnterior = fijar_nivel_int(NIVEL_3);
+			procesoActualmente->estado = LISTO;
+			eliminar_elem(&lista_dormidos, procesoActualmente);
+			insertar_ultimo(&lista_listos, procesoActualmente);
+			fijar_nivel_int(nivelAnterior);
+		}
+		procesoActualmente = procesoSiguiente;
+	}
+	
+	return;
 }
 
 /*
@@ -648,6 +668,20 @@ int cerrar_mutex(unsigned int mutexid){
 
 //Fin de Mutex
 
+//Round Robin
+void ticksRound_robin() {
+	if (p_proc_actual->estado == LISTO) { //Caso en el que hay proceso
+		//Si el contador de ticks es terminado que mande una interrupcion
+		if (p_proc_actual->contadorTicks > 0) {
+			p_proc_actual->contadorTicks--;
+			printk("Proceso id: %d, contador de tiks que faltan: %d\n", p_proc_actual->id, p_proc_actual->contadorTicks);
+		}
+		if (p_proc_actual->contadorTicks == 0) {
+			printk("Proceso id: %d, lanzando interrupcion\n", p_proc_actual->id);
+			activar_int_SW(); //Rutina de tratamiento proporcionada en HAL.h --> se encargará de lanzar una interrupcion de software
+		}
+	}
+}
 
 
 /*

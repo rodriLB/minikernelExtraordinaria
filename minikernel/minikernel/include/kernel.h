@@ -29,11 +29,16 @@ typedef struct BCP_t {
 	BCPptr siguiente;		/* puntero a otro BCP */
 	void *info_mem;			/* descriptor del mapa de memoria */
 
+
+	//Dormir
 	int seg_bloqueado; //Tiempo que estará el proceso bloqueado
 
 	//Mutex related
 	int descriptoresProcesosUsados[NUM_MUT_PROC]; //Descriptores en uso de cada procesos
 	int descriptoresProcesosActivos; //Contador de descriptores que va a ejecutar los procesos
+
+	//Round Robin
+	int contadorTicks;//Contador de ticks para round robin
 } BCP;
 
 /*
@@ -153,5 +158,7 @@ int lock(unsigned int mutexid);
 int unlock(unsigned int mutexid);
 int cerrar_mutex(unsigned int mutexid);
 
+//Round Robin
+void ticksRound_robin();
 
 #endif /* _KERNEL_H */
