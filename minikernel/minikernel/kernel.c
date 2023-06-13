@@ -641,7 +641,7 @@ int cerrar_mutex(unsigned int mutexid){
 		eliminar_primero(&listaProcesosBloqueadosMutex);
 		insertar_ultimo(&lista_listos, p_proc_bloqueado);
 		printk("Proceso id %d DESBLOQUEADO\n", p_proc_bloqueado->id);
-		 fijar_nivel_int(nivelAnterior);
+		fijar_nivel_int(nivelAnterior);
 	}
 	return 0;
 }
