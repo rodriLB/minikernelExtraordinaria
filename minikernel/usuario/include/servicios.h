@@ -33,7 +33,7 @@ int escribir(char *texto, unsigned int longi);
 //Obtener ID
 int obtener_id_pr();
 
-//Ejercicio Dormir
+//Dormir
 int dormir(unsigned int segundos);
 
 
@@ -41,7 +41,7 @@ int dormir(unsigned int segundos);
 #define NO_RECURSIVO 0 
 #define RECURSIVO 1 
 
-//Ejercicio Mutex
+//Mutex
 int crear_mutex(char* nombre, unsigned int tipo);
 int abrir_mutex(char* nombre);
 int lock(unsigned int mutexid);

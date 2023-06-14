@@ -49,12 +49,12 @@ int obtener_id_pr() {
 	return llamsis(OBTENERID, 0);
 }
 
-//Ejericio Dormir
+//Dormir
 int dormir(unsigned int segundos) {
 	return llamsis(DORMIR, 1, (long)segundos);
 }
 
-//Ejercicio Mutex
+//Mutex
 int crear_mutex(char* nombre, unsigned int tipo) {
 	return llamsis(CREARMUTEX, 2, (long)nombre, (long)tipo);
 }

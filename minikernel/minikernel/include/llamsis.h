@@ -25,12 +25,13 @@
 #define TERMINAR_PROCESO 1
 #define ESCRIBIR 2
 
+//Obtener ID
 #define OBTENERID 3
 
-//Ejercicio Dormir
+//Dormir
 #define DORMIR 4
 
-//Ejercicio Mutex
+//Mutex
 #define CREARMUTEX 5
 #define ABRIRMUTEX 6
 #define LOCK 7
