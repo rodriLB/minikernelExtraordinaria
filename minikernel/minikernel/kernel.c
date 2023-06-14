@@ -21,6 +21,7 @@ static void iniciar_tabla_proc(){
 
 	for (i=0; i<MAX_PROC; i++)
 		tabla_procs[i].estado=NO_USADA;
+
 }
 
 /*
@@ -119,7 +120,7 @@ static BCP * planificador(){
  * Usada por llamada terminar_proceso y por rutinas que tratan excepciones
  *
  */
-static void liberar_proceso(){
+static void liberar_proceso(){ //REVISAR
 	BCP * p_proc_anterior;
 
 	liberar_imagen(p_proc_actual->info_mem); /* liberar mapa */
@@ -197,27 +198,33 @@ static void int_terminal(){
  */
 static void int_reloj(){
 
-	ticksRound_robin();
-	
-	
 	printk("-> TRATANDO INT. DE RELOJ\n");
-	
 
+	/////////////////////////////////////
+	//       Implementacion FIFO       //
+	/////////////////////////////////////
 	//Llamamos a los procesos dormidos
 	BCPptr procesoActualmente = lista_dormidos.primero;
 	//Recorrer por medio de un bucle
 	while (procesoActualmente != NULL) {
-		BCPptr procesoSiguiente = procesoActualmente->siguiente;
-		procesoActualmente->seg_bloqueado--;
-		if (procesoActualmente->seg_bloqueado <= 0) { //Tiempo agotado
+		procesoActualmente->segBloqueado--;
+		if (procesoActualmente->segBloqueado <= 0) { //Tiempo agotado //Despertamos proceso
 			int nivelAnterior = fijar_nivel_int(NIVEL_3);
 			procesoActualmente->estado = LISTO;
 			eliminar_elem(&lista_dormidos, procesoActualmente);
 			insertar_ultimo(&lista_listos, procesoActualmente);
 			fijar_nivel_int(nivelAnterior);
 		}
-		procesoActualmente = procesoSiguiente;
+		procesoActualmente = procesoActualmente->siguiente;
 	}
+	
+
+
+	////////////////////////////////////
+	//   Implementacion Round Robin   //
+	////////////////////////////////////
+	//ticksRoundRobin();
+		
 	
 	return;
 }
@@ -243,6 +250,35 @@ static void tratar_llamsis(){
 static void int_sw(){
 
 	printk("-> TRATANDO INT. SW\n");
+
+	/////////////////////////////////////
+	//       Implementacion FIFO       //
+	/////////////////////////////////////
+	cambio_proceso(&lista_listos);
+
+	////////////////////////////////////
+	//   Implementacion Round Robin   //
+	////////////////////////////////////
+	/*
+	if (lista_listos.primero == lista_listos.ultimo) {
+		p_proc_actual->contador_ticks = TICKS_POR_RODAJA;//TICKS_POR_RODAJA Define proporcionado en "const.h"--> para la resolucion del roun robin
+		printk("Proceso id: %d, contador restaurando\n", p_proc_actual->id);
+	}
+	else {
+		BCPptr p_proc_aux = p_proc_actual;
+		int interrupcion = fijar_nivel_int(NIVEL_1);
+		eliminar_elem(&lista_listos, p_proc_aux);
+		insertar_ultimo(&lista_listos, p_proc_aux);
+		fijar_nivel_int(interrupcion);
+		p_proc_actual = planificador();
+		p_proc_actual->contador_ticks = TICKS_POR_RODAJA;
+		printk("SE A EXPULSADO DE %d a %d\n", p_proc_aux->id, p_proc_actual->id);
+		cambio_contexto(&(p_proc_aux->contexto_regs), &(p_proc_actual->contexto_regs));
+
+
+	}
+	*/
+
 
 	return;
 }
@@ -331,6 +367,16 @@ int sis_escribir()
  */
 int sis_terminar_proceso(){
 
+	//Comprobamos si el mutex tiene procesos abiertos
+	int i = 0;
+	while (p_proc_actual->descriptoresProcesosActivos > 0) {
+		//Cerramos mutex si se da la condicion
+		if (p_proc_actual->descriptoresProcesosUsados[i] != -1) {
+			cerrar_mutex(p_proc_actual->descriptoresProcesosUsados[i]);
+		}
+		i++;
+	}
+
 	printk("-> FIN PROCESO %d\n", p_proc_actual->id);
 
 	liberar_proceso();
@@ -338,20 +384,23 @@ int sis_terminar_proceso(){
         return 0; /* no deber�a llegar aqui */
 }
 
-
-//Obtener ID
+////////////////////////////////////
+//           Obtener ID           //
+////////////////////////////////////
 int obtener_id_pr(){
 	return p_proc_actual->id;
 }
 
-//Ejercio Dormir
+////////////////////////////////////
+//             DORMIR             //
+////////////////////////////////////
 int dormir(unsigned int segundos){
 
 	int nivelAnterior = fijar_nivel_int(NIVEL_3);
 	BCPptr proceso_dormir = p_proc_actual;
 
 	proceso_dormir->estado = BLOQUEADO;
-	proceso_dormir->seg_bloqueado = segundos * TICK;
+	proceso_dormir->segBloqueado = segundos * TICK;
 	eliminar_primero(&lista_listos);
 	insertar_ultimo(&lista_dormidos, proceso_dormir);
 
@@ -363,13 +412,17 @@ int dormir(unsigned int segundos){
 }
 
 
-//Ejercicio Mutex
+/////////////////////////////////////
+//              MUTEX              //
+/////////////////////////////////////
 int comprobacionesMutex(char *nombre){
 	//COMPROBACCIONES
 	//Longitud del nombre
-	if (comprobacionMutexLonNombre(nombre) != 0)
+	if (comprobacionMutexLonNombre(nombre) != 0){
+		printk("Error, nombre demasiado largo\n");
 		return -1;
-
+	}
+	
 	//Nombres Duplicado
 	if (comprobacionMutexNombre(nombre)!= -1){
 		printk("Error, mutex %s ya existe en el sistema\n", nombre);
@@ -396,7 +449,6 @@ int comprobacionMutexNombre(char *nombre) {
 
 int comprobacionMutexLonNombre(char *nombre){
 	if (strlen(nombre) > MAX_NOM_MUT){
-		printk("Error, nombre demasiado largo\n");
 		return -1;
 	}
 	return 0;
@@ -470,7 +522,7 @@ int crear_mutex(char *nombre, int tipo){
 			eliminar_primero(&lista_listos);
 			insertar_ultimo(&listaProcesosBloqueadosMutex, p_proc_bloqueado);
 			p_proc_actual = planificador();
-			printk("C.CONTEXTO POR BLOQUEO de %d a %d\n", p_proc_bloqueado->id, p_proc_actual->id);
+			printk("Cambio de Contexto por BLOQUEO de %d a %d\n", p_proc_bloqueado->id, p_proc_actual->id);
 			cambio_contexto(&(p_proc_bloqueado->contexto_regs), &(p_proc_actual->contexto_regs));
 			fijar_nivel_int(nivelAnterior);
 		}
@@ -619,7 +671,7 @@ int unlock(unsigned int mutexid){
 
 	}
 	else { 	
-		// si el mutex no esta bloqueado el intento de desbloquearlo producira un error 
+		//Si el mutex no esta bloqueado, se producira un error 
 		printk("Error, mutex %s no bloqueado\n", mut->nombre);
 		return -1;
 	}
@@ -668,8 +720,10 @@ int cerrar_mutex(unsigned int mutexid){
 
 //Fin de Mutex
 
-//Round Robin
-void ticksRound_robin() {
+///////////////////////////////////
+//          ROUND ROBIN          //
+///////////////////////////////////
+void ticksRoundRobin() {
 	if (p_proc_actual->estado == LISTO) { //Caso en el que hay proceso
 		//Si el contador de ticks es terminado que mande una interrupcion
 		if (p_proc_actual->contadorTicks > 0) {
